@@ -65,15 +65,15 @@ jobs:
           docker build -t test-analytics -f cmd/analytics/Dockerfile .
 
       - name: Scan dependencies for vulnerabilities
-        uses: aquasecurity/trivy-action@v0.11.0
+        uses: aquasecurity/trivy-action@0.24.0
         with:
           scan-type: 'fs'
-          vulnerability-type: 'os,library'
+          vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
           ignore-unfixed: true
 
       - name: Scan Docker images for vulnerabilities
-        uses: aquasecurity/trivy-action@v0.11.0
+        uses: aquasecurity/trivy-action@0.24.0
         with:
           scan-type: 'image'
           image-ref: test-moderation
