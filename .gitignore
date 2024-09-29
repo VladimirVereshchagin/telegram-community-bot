@@ -1,0 +1,27 @@
+# Директории Go
+/bin/
+/pkg/
+/vendor/
+
+# Файлы Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Конфигурационные файлы
+config.yaml
+.env
+
+# Логи и временные файлы
+*.log
+*.tmp
+
+# Директории IDE и редакторов
+.vscode/
+.idea/
+
+# macOS файлы
+.DS_Store
