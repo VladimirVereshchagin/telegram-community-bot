@@ -63,6 +63,7 @@ jobs:
           go build -o analytics ./cmd/analytics
 
       - name: Build Docker images (test)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           docker build -t test-moderation -f cmd/moderation/Dockerfile .
           docker build -t test-user_management -f cmd/user_management/Dockerfile .
