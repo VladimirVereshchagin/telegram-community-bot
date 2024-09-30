@@ -1,6 +1,5 @@
 # Директории Go
 /bin/
-/pkg/
 /vendor/
 
 # Файлы Go
