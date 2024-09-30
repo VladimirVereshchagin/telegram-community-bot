@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest] # Переносимость и проверка на разных платформах
         go-version: ['1.22']
     steps:
       - name: Checkout repository
@@ -45,7 +45,7 @@ jobs:
 
       - name: Run tests with coverage
         env:
-          CGO_ENABLED: 1
+          CGO_ENABLED: 1 # Включение CGO для всех платформ
         run: |
           go test -v -race -coverprofile=coverage.out ./...
 
@@ -63,7 +63,7 @@ jobs:
           go build -o analytics ./cmd/analytics
 
       - name: Build Docker images (test)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' # Выполнение только на Ubuntu
         run: |
           docker build -t test-moderation -f cmd/moderation/Dockerfile .
           docker build -t test-user_management -f cmd/user_management/Dockerfile .
@@ -71,6 +71,7 @@ jobs:
           docker build -t test-analytics -f cmd/analytics/Dockerfile .
 
       - name: Scan dependencies for vulnerabilities
+        if: matrix.os == 'ubuntu-latest' # Сканирование только на Ubuntu
         uses: aquasecurity/trivy-action@0.24.0
         with:
           scan-type: 'fs'
@@ -79,6 +80,7 @@ jobs:
           ignore-unfixed: true
 
       - name: Scan Docker images for vulnerabilities
+        if: matrix.os == 'ubuntu-latest' # Сканирование только на Ubuntu
         uses: aquasecurity/trivy-action@0.24.0
         with:
           scan-type: 'image'
