@@ -68,12 +68,24 @@ jobs:
           go build -o automation ./cmd/automation
           go build -o analytics ./cmd/analytics
 
-      - name: Build Docker images (test)
+      - name: Build Docker images for moderation
         if: matrix.os == 'ubuntu-latest'
         run: |
           docker build -t test-moderation -f cmd/moderation/Dockerfile .
+
+      - name: Build Docker images for user management
+        if: matrix.os == 'ubuntu-latest'
+        run: |
           docker build -t test-user_management -f cmd/user_management/Dockerfile .
+
+      - name: Build Docker images for automation
+        if: matrix.os == 'ubuntu-latest'
+        run: |
           docker build -t test-automation -f cmd/automation/Dockerfile .
+
+      - name: Build Docker images for analytics
+        if: matrix.os == 'ubuntu-latest'
+        run: |
           docker build -t test-analytics -f cmd/analytics/Dockerfile .
 
       - name: Scan dependencies for vulnerabilities
