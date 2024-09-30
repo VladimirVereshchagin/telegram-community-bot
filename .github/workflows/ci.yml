@@ -44,16 +44,19 @@ jobs:
           args: "--timeout=10m"
 
       - name: Create coverage file if missing
+        if: matrix.os != 'windows-latest'  # Выполняется только для Ubuntu и macOS
         run: |
-          powershell -Command "New-Item -Path coverage.out -ItemType File -Force"
+          touch coverage.out
 
-      - name: Run tests with coverage
+      - name: Run tests with coverage (Linux and macOS only)
+        if: matrix.os != 'windows-latest'  # Тестирование покрытия кода только на Linux и macOS
         env:
           CGO_ENABLED: 1
         run: |
           go test -v -race -covermode=atomic -coverprofile=coverage.out ./...
 
-      - name: Upload coverage report
+      - name: Upload coverage report (Linux and macOS only)
+        if: matrix.os != 'windows-latest'  # Отчет о покрытии только для Linux и macOS
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
