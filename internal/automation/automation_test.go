@@ -1,6 +1,7 @@
 package automation
 
 import (
+	"sync"
 	"testing"
 	"time"
 
@@ -11,10 +12,13 @@ import (
 // MockBot используется для мокирования BotAPI
 type MockBot struct {
 	Messages []tgbotapi.Chattable
+	mu       sync.Mutex // добавляем мьютекс для синхронизации
 }
 
 // Send мокирует отправку сообщений
 func (m *MockBot) Send(c tgbotapi.Chattable) (tgbotapi.Message, error) {
+	m.mu.Lock()         // блокируем доступ к Messages
+	defer m.mu.Unlock() // разблокируем после записи
 	m.Messages = append(m.Messages, c)
 	return tgbotapi.Message{}, nil
 }
@@ -37,6 +41,8 @@ func TestAutomationService_sendDailyMessage(t *testing.T) {
 	// Вызываем метод sendDailyMessage
 	service.sendDailyMessage()
 	// Проверяем, что сообщение было отправлено
+	bot.mu.Lock()         // блокируем доступ перед проверкой
+	defer bot.mu.Unlock() // разблокируем после проверки
 	assert.Len(t, bot.Messages, 1)
 	// Проверяем содержимое отправленного сообщения
 	msg, ok := bot.Messages[0].(tgbotapi.MessageConfig)
@@ -81,5 +87,7 @@ func TestAutomationService_startScheduler(t *testing.T) {
 	service.Stop()
 
 	// Проверяем, что сообщение было отправлено хотя бы один раз
+	bot.mu.Lock()         // блокируем доступ перед проверкой
+	defer bot.mu.Unlock() // разблокируем после проверки
 	assert.GreaterOrEqual(t, len(bot.Messages), 1, "Ожидалось, что хотя бы одно сообщение будет отправлено")
 }
