@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-and-test:
@@ -47,7 +47,8 @@ jobs:
         env:
           CGO_ENABLED: 1
         run: |
-          go test -v -race -coverprofile=./coverage.out ./...
+          echo "mode: count" > coverage.out  # Создаем файл покрытия, если его нет
+          go test -v -race -covermode=count -coverprofile=coverage.out ./...
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
