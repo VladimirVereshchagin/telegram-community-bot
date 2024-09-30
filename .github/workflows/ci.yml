@@ -17,16 +17,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Go ${{ matrix.go-version }}
+      - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
 
+      - name: Clear Go Cache
+        run: |
+          go clean -cache -modcache -i -r
+
       - name: Install dependencies
         run: go mod download
-
-      - name: List files in pkg/bot directory
-        run: ls -R pkg/bot
 
       - name: Check code formatting
         run: gofmt -l -e .
@@ -39,6 +40,7 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.54.2
+          skip-cache: true
           args: "--timeout=10m"
 
       - name: Run tests with coverage
@@ -116,6 +118,6 @@ jobs:
             vladimirvereschagin/telegram-community-bot-user_management:latest
             vladimirvereschagin/telegram-community-bot-automation:latest
             vladimirvereschagin/telegram-community-bot-analytics:latest
-
+  
       - name: Log out from Docker Hub
         run: docker logout
