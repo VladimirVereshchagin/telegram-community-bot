@@ -47,8 +47,8 @@ jobs:
         env:
           CGO_ENABLED: 1
         run: |
-          echo "mode: count" > coverage.out  # Создаем файл покрытия, если его нет
-          go test -v -race -covermode=count -coverprofile=coverage.out ./...
+          echo "mode: atomic" > coverage.out  # Создаем файл покрытия, если его нет
+          go test -v -race -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
