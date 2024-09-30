@@ -47,7 +47,7 @@ jobs:
         env:
           CGO_ENABLED: 1
         run: |
-          echo "mode: atomic" > coverage.out  # Создаем файл покрытия, если его нет
+          echo "mode: atomic" | Out-File -FilePath coverage.out  # создание файла
           go test -v -race -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: Upload coverage report
