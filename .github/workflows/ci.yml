@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
+      - name: List files in pkg/bot directory
+        run: ls -R pkg/bot
+
       - name: Check code formatting
         run: gofmt -l -e .
         shell: bash
