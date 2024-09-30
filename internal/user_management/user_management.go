@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	botapi "github.com/vladimirvereshchagin/telegram-community-bot/pkg/bot"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	botapi "github.com/vladimirvereshchagin/telegram-community-bot/pkg/bot"
 )
 
 // UserService предоставляет методы для управления пользователями
@@ -68,7 +67,10 @@ func (u *UserService) handleUpdate(update tgbotapi.Update) {
 			u.handleHelpCommand(update.Message)
 		default:
 			msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Неизвестная команда. Используйте /help для списка доступных команд.")
-			u.Bot.Send(msg)
+			_, err := u.Bot.Send(msg)
+			if err != nil {
+				log.Printf("Ошибка отправки сообщения: %v", err)
+			}
 		}
 		return
 	}
