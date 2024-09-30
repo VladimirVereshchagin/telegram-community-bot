@@ -44,7 +44,8 @@ jobs:
           args: "--timeout=10m"
 
       - name: Create coverage file if missing
-        run: touch coverage.out  # Создает пустой файл, если его нет
+        run: |
+          powershell -Command "New-Item -Path coverage.out -ItemType File -Force"
 
       - name: Run tests with coverage
         env:
