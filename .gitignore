@@ -9,6 +9,7 @@
 *.so
 *.dylib
 *.test
+!*.go.test
 
 # Конфигурационные файлы
 config.yaml
