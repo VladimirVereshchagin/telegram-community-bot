@@ -43,11 +43,13 @@ jobs:
           skip-cache: true
           args: "--timeout=10m"
 
+      - name: Create coverage file if missing
+        run: touch coverage.out  # Создает пустой файл, если его нет
+
       - name: Run tests with coverage
         env:
           CGO_ENABLED: 1
         run: |
-          echo "mode: atomic" | Out-File -FilePath coverage.out  # создание файла
           go test -v -race -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: Upload coverage report
