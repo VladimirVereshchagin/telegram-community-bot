@@ -9,19 +9,10 @@ services:
       - db
     environment:
       - CONFIG_PATH=/configs/config.yaml
+    env_file:
+      - .env
     volumes:
       - ./configs:/configs
-      - ./.env:/.env
-
-  analytics:
-    build:
-      context: .
-      dockerfile: cmd/analytics/Dockerfile
-    environment:
-      - CONFIG_PATH=/configs/config.yaml
-    volumes:
-      - ./configs:/configs
-      - ./.env:/.env
 
   automation:
     build:
@@ -29,9 +20,21 @@ services:
       dockerfile: cmd/automation/Dockerfile
     environment:
       - CONFIG_PATH=/configs/config.yaml
+    env_file:
+      - .env
     volumes:
       - ./configs:/configs
-      - ./.env:/.env
+
+  analytics:
+    build:
+      context: .
+      dockerfile: cmd/analytics/Dockerfile
+    environment:
+      - CONFIG_PATH=/configs/config.yaml
+    env_file:
+      - .env
+    volumes:
+      - ./configs:/configs
 
   user_management:
     build:
@@ -39,9 +42,10 @@ services:
       dockerfile: cmd/user_management/Dockerfile
     environment:
       - CONFIG_PATH=/configs/config.yaml
+    env_file:
+      - .env
     volumes:
       - ./configs:/configs
-      - ./.env:/.env
 
   db:
     image: postgres:16
