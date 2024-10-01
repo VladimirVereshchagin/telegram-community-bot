@@ -4,17 +4,19 @@ FROM golang:1.22-alpine
 # Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Копируем go.mod и go.sum из корневой директории проекта
+# Копируем go.mod и go.sum из корневой директории
 COPY go.mod go.sum ./
 
-# Устанавливаем зависимости
+# Загружаем зависимости
 RUN go mod download
 
-# Копируем исходный код сервиса analytics
-COPY cmd/analytics/ ./
+# Копируем исходный код
+COPY ./cmd/analytics/ ./cmd/analytics/
+COPY ./internal/ ./internal/
+COPY ./pkg/ ./pkg/
 
 # Компилируем приложение
-RUN go build -o analytics .
+RUN go build -o analytics ./cmd/analytics
 
-# Указываем команду запуска
+# Указываем команду для запуска
 CMD ["./analytics"]

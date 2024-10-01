@@ -1,20 +1,22 @@
-# Используем официальный образ Golang в качестве базового
+# Используем официальный образ Golang с поддержкой Alpine
 FROM golang:1.22-alpine
 
-# Устанавливаем рабочую директорию внутри контейнера
+# Создаем рабочую директорию
 WORKDIR /app
 
-# Копируем go.mod и go.sum из корневой директории проекта
+# Копируем go.mod и go.sum для загрузки зависимостей
 COPY go.mod go.sum ./
 
-# Устанавливаем зависимости
+# Загружаем зависимости
 RUN go mod download
 
-# Копируем исходный код сервиса moderation
-COPY cmd/moderation/ ./
+# Копируем все необходимые исходные файлы (включая internal и pkg)
+COPY ./cmd/moderation/ ./cmd/moderation/
+COPY ./internal/ ./internal/
+COPY ./pkg/ ./pkg/
 
 # Компилируем приложение
-RUN go build -o moderation .
+RUN go build -o moderation ./cmd/moderation
 
 # Указываем команду запуска
 CMD ["./moderation"]
