@@ -1,0 +1,10 @@
+telegram:
+  token: "${TELEGRAM_TOKEN}"
+
+database:
+  driver: "postgres"
+  dsn: "user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB} sslmode=disable"
+
+analytics:
+  measurement_id: "${MEASUREMENT_ID}"
+  api_secret: "${API_SECRET}"
