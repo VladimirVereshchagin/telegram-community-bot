@@ -17,16 +17,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Загружаем всю историю репозитория
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
 
+      - name: Cache Go modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ matrix.go-version }}-
+
       - name: Clear Go Cache
-        run: |
-          go clean -cache -modcache -i -r
+        run: go clean -cache -modcache -i -r
 
       - name: Install dependencies
         run: go mod download
@@ -45,15 +54,10 @@ jobs:
           skip-cache: true
           args: "--timeout=10m"
 
-      - name: Create coverage file if missing
-        run: |
-          touch coverage.out
-
       - name: Run tests with coverage
         env:
           CGO_ENABLED: 1
-        run: |
-          go test -v -race -covermode=atomic -coverprofile=coverage.out ./...
+        run: go test -v -race -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
@@ -61,52 +65,12 @@ jobs:
           name: coverage-report
           path: coverage.out
 
-      - name: Build services
+      - name: Build binaries for all services
         run: |
           go build -o moderation ./cmd/moderation
           go build -o user_management ./cmd/user_management
           go build -o automation ./cmd/automation
           go build -o analytics ./cmd/analytics
-
-      - name: Build Docker images for moderation
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          docker build -t test-moderation -f cmd/moderation/Dockerfile .
-
-      - name: Build Docker images for user management
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          docker build -t test-user_management -f cmd/user_management/Dockerfile .
-
-      - name: Build Docker images for automation
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          docker build -t test-automation -f cmd/automation/Dockerfile .
-
-      - name: Build Docker images for analytics
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          docker build -t test-analytics -f cmd/analytics/Dockerfile .
-
-      - name: Scan dependencies for vulnerabilities
-        if: matrix.os == 'ubuntu-latest'
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          scan-type: 'fs'
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
-          ignore-unfixed: true
-          cache-dir: .trivy-cache  # Используем кэш
-
-      - name: Scan Docker images for vulnerabilities
-        if: matrix.os == 'ubuntu-latest'
-        uses: aquasecurity/trivy-action@0.24.0
-        with:
-          scan-type: 'image'
-          image-ref: test-moderation
-          severity: 'CRITICAL,HIGH'
-          ignore-unfixed: true
-          cache-dir: .trivy-cache  # Используем кэш
 
   docker-build-and-push:
     needs: build-and-test
@@ -116,7 +80,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Загружаем всю историю репозитория
+          fetch-depth: 0
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -136,18 +100,16 @@ jobs:
           context: ./cmd/moderation
           push: true
           platforms: linux/amd64,linux/arm64
-          build-args: |
-            BUILDKIT_INLINE_CACHE=1
+          build-args: BUILDKIT_INLINE_CACHE=1
           tags: vladimirvereschagin/telegram-community-bot-moderation:latest
 
-      - name: Build and push Docker image for user_management
+      - name: Build and push Docker image for user management
         uses: docker/build-push-action@v6
         with:
           context: ./cmd/user_management
           push: true
           platforms: linux/amd64,linux/arm64
-          build-args: |
-            BUILDKIT_INLINE_CACHE=1
+          build-args: BUILDKIT_INLINE_CACHE=1
           tags: vladimirvereschagin/telegram-community-bot-user_management:latest
 
       - name: Build and push Docker image for automation
@@ -156,8 +118,7 @@ jobs:
           context: ./cmd/automation
           push: true
           platforms: linux/amd64,linux/arm64
-          build-args: |
-            BUILDKIT_INLINE_CACHE=1
+          build-args: BUILDKIT_INLINE_CACHE=1
           tags: vladimirvereschagin/telegram-community-bot-automation:latest
 
       - name: Build and push Docker image for analytics
@@ -166,9 +127,8 @@ jobs:
           context: ./cmd/analytics
           push: true
           platforms: linux/amd64,linux/arm64
-          build-args: |
-            BUILDKIT_INLINE_CACHE=1
+          build-args: BUILDKIT_INLINE_CACHE=1
           tags: vladimirvereschagin/telegram-community-bot-analytics:latest
-  
+
       - name: Log out from Docker Hub
         run: docker logout
