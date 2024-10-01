@@ -97,7 +97,8 @@ jobs:
       - name: Build and push Docker image for moderation
         uses: docker/build-push-action@v6
         with:
-          context: ./cmd/moderation
+          context: .
+          file: ./cmd/moderation/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: BUILDKIT_INLINE_CACHE=1
@@ -106,7 +107,8 @@ jobs:
       - name: Build and push Docker image for user management
         uses: docker/build-push-action@v6
         with:
-          context: ./cmd/user_management
+          context: .
+          file: ./cmd/user_management/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: BUILDKIT_INLINE_CACHE=1
@@ -115,7 +117,8 @@ jobs:
       - name: Build and push Docker image for automation
         uses: docker/build-push-action@v6
         with:
-          context: ./cmd/automation
+          context: .
+          file: ./cmd/automation/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: BUILDKIT_INLINE_CACHE=1
@@ -124,7 +127,8 @@ jobs:
       - name: Build and push Docker image for analytics
         uses: docker/build-push-action@v6
         with:
-          context: ./cmd/analytics
+          context: .
+          file: ./cmd/analytics/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: BUILDKIT_INLINE_CACHE=1
