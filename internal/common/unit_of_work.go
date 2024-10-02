@@ -37,11 +37,17 @@ func (u *unitOfWork) Begin() error {
 
 // Commit подтверждает транзакцию
 func (u *unitOfWork) Commit() error {
+	if u.tx == nil {
+		return sql.ErrTxDone
+	}
 	return u.tx.Commit()
 }
 
 // Rollback откатывает транзакцию
 func (u *unitOfWork) Rollback() error {
+	if u.tx == nil {
+		return sql.ErrTxDone
+	}
 	return u.tx.Rollback()
 }
 

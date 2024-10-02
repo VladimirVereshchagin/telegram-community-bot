@@ -26,10 +26,14 @@ type Config struct {
 
 // LoadConfig загружает конфигурацию из YAML файла
 func LoadConfig(path string) (*Config, error) {
+	// Читаем файл конфигурации
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
+
+	// Расширяем переменные окружения в содержимом файла
+	data = []byte(os.ExpandEnv(string(data)))
 
 	var config Config
 	err = yaml.Unmarshal(data, &config)

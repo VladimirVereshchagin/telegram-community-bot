@@ -3,7 +3,7 @@ telegram:
 
 database:
   driver: "postgres"
-  dsn: "user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB} sslmode=disable"
+  dsn: "host=db port=5432 user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB} sslmode=disable"
 
 analytics:
   measurement_id: "${MEASUREMENT_ID}"
